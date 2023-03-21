@@ -1,8 +1,6 @@
 import React, { memo } from "react";
 import RowCell from "../RowCell";
 import { Divider, Grid } from "@mui/material";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
 
 const Row = (props) => {
   const { colOrder, rowsList } = props;

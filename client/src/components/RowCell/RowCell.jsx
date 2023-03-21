@@ -13,7 +13,7 @@ const RowCell = (props) => {
   if (type === "multi_select") {
     const col = (rowData[type] || []).reduce((acc, item, index) => {
       return `${acc} ${item.name}${
-        index != rowData[type].length - 1 ? ", " : ""
+        index !== rowData[type].length - 1 ? ", " : ""
       } `;
     }, "");
     return <ColumnCell title={col} />;

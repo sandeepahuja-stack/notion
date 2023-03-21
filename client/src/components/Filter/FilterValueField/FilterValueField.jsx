@@ -22,7 +22,6 @@ const FilterValueFiled = (props) => {
           })}
         </Select>
       );
-      break;
     case "multi_select":
     case "status":
       let opt = [...options];
@@ -55,7 +54,6 @@ const FilterValueFiled = (props) => {
           }}
         />
       );
-      break;
   }
 };
 export default FilterValueFiled;

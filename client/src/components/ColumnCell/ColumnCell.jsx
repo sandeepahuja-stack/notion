@@ -1,6 +1,5 @@
-import { Box, Divider } from "@mui/material";
+import { Box } from "@mui/material";
 import { memo } from "react";
-import TableCell from "@mui/material/TableCell";
 
 const ColumnCell = (props) => {
   const { title, isHeading = false } = props;

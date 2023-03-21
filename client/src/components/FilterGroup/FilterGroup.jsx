@@ -1,6 +1,6 @@
 import { Box, Button, MenuItem, Select } from "@mui/material";
-import Filter from "../Filter/Filter";
-import React, { useRef, useState } from "react";
+import Filter from "../Filter";
+import React, {  useState } from "react";
 
 const FilterGroup = (props) => {
   const { data, updateFilterGroup, columnInfo, index = -1 } = props;
@@ -43,11 +43,11 @@ const FilterGroup = (props) => {
     <>
       <Box
         sx={{
-          marginLeft: "120px",
+          marginLeft: "20px",
         }}
       >
         {(data.filters || []).map((filterObj, i) => {
-          if (!filterObj) return;
+          if (!filterObj) return null;
           lastFilterIndex = "filters" in filterObj ? lastFilterIndex : i;
           let key = `${data.operator}_${index}_${i}_${lastFilterIndex}`;
 

@@ -1,8 +1,7 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import Column from "../Column";
 import { Grid } from "@mui/material";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import styled from "@emotion/styled";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import Row from "../Row";
 
 
