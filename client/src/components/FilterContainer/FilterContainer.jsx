@@ -14,15 +14,15 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "80%",
-  height: "500px",
+  height: "700px",
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
 };
 
 function FilterContainer(props) {
-  const { handleClose, open, columnsHead, filter } = props;
-  const [filterState, updateFilterState] = useState(null);
+  const { handleClose, open, columnsHead, filter, filterState, updateFilterState } = props;
+  
   const addFirstDefaultFilter = () => {
     if (columnsHead.columnsOrder.length > 0) {
       const defaultSelectedFilter = getPropertyDetail(
@@ -50,13 +50,15 @@ function FilterContainer(props) {
   }, [columnsHead]);
 
   const applyFilter = () => {
-    if (filterState) {
+    
       const obj = populateReqFilter(
         filterState,
         columnsHead["columnsIdNameMap"]
       );
-      filter(obj);
-    }
+      filter({
+        filter: obj
+      });
+      handleClose();
   };
 
   if (!filterState) return;
@@ -71,7 +73,7 @@ function FilterContainer(props) {
         <Box sx={style}>
           <Box
             sx={{
-              height: "400px",
+              height: "600px",
               overflow: "auto",
             }}
           >
