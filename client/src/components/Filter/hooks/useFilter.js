@@ -20,8 +20,7 @@ const useFilter = (props) => {
 
   // equals, doesnot equal and many more
   const [selectedOperator, setOperator] = useState(operator);
-  const [value, setValue] = useState(()=>{
-
+  const [value, setValue] = useState(() => {
     return filteredValue;
   });
 
@@ -32,32 +31,6 @@ const useFilter = (props) => {
     });
   }, [selectedProperty, columnsDetails]);
 
-  useEffect(() => {
-    if (value || selectedOperator || selectedProperty) {
-      const propDetail = getPropertyDetail(selectedProperty, columnsDetails);
-      const { id, type } = propDetail;
-      let val = value;
-
-      if (type === "number") {
-        val = parseFloat(val);
-      }
-      
-
-      let obj = {
-        property: id,
-        filter: {
-          value: {
-            type,
-            value:
-              filterFieldMap[filterField][selectedOperator] === "true" || val,
-          },
-          operator: selectedOperator,
-        },
-      };
-      updateFilter(obj);
-    }
-  }, [value, selectedOperator, selectedProperty, filterField, columnsDetails, updateFilter]);
-
   const handlePropChange = (event, property) => {
     setProperty(property);
     let { defaultOperator } = getOperators({
@@ -66,22 +39,35 @@ const useFilter = (props) => {
     });
     setOperator(defaultOperator);
     setValue(null);
+
+    handleFieldsChange({
+      value: null,
+      property,
+      operator: defaultOperator,
+    });
   };
 
   const handleOperator = (e) => {
     setOperator(e.target.value);
+    handleFieldsChange({
+      value,
+      property: selectedProperty,
+      operator: e.target.value,
+    });
   };
 
   const filterFieldOnChange = (e, val = "") => {
-    if (filterField === "select" || filterField === "checkbox") {
-      setValue(e.target.value);
-      return;
-    }
+    let tempVal = e.target.value;
     if (filterField === "multi_select" || filterField === "status") {
-      setValue(val);
-      return;
+      tempVal = val;
     }
-    setValue(e.target.value);
+    setValue(tempVal);
+
+    handleFieldsChange({
+      value: tempVal,
+      property: selectedProperty,
+      operator: selectedOperator,
+    });
   };
   const { filterFieldOptions } = useMemo(() => {
     let options =
@@ -91,21 +77,44 @@ const useFilter = (props) => {
     if (filterField === "checkbox") {
       options = [{ name: "checked" }, { name: "unchecked" }];
     }
-    options = options.map((item)=>{
-      return item.name
+    options = options.map((item) => {
+      return item.name;
     });
     return {
       filterFieldOptions: options || [],
     };
   }, [selectedProperty, filterField, columnsDetails]);
-  
+
+  const handleFieldsChange = ({ value, operator, property }) => {
+    if (value || operator || property) {
+      const propDetail = getPropertyDetail(property, columnsDetails);
+      const { id, type } = propDetail;
+      let val = value;
+
+      if (type === "number") {
+        val = parseFloat(val);
+      }
+
+      let obj = {
+        property: id,
+        filter: {
+          value: {
+            type,
+            value: filterFieldMap[filterField][operator] === "true" || val,
+          },
+          operator: operator,
+        },
+      };
+      updateFilter(obj);
+    }
+  };
   return {
     columnsOrder,
     defaultOperator,
     filterField,
     filterFieldOptions,
     filterFieldOnChange,
-    filterFieldValue: value|| "",
+    filterFieldValue: value || "",
     handlePropChange,
     handleOperator,
     operatorsList,
