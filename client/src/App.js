@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { populateColumnHead, populateRowData } from "./helper";
+import { populateColumnHead } from "./helper";
 import TableContainer from "./components/TableContainer";
 
-import Filter from "./components/Filter/Filter";
 import FilterGroup from "./components/FilterGroup/FilterGroup";
-import { obj3 } from "./one";
 import getPropertyDetail from "./helper/filter/getPropertyId";
 import { filterField } from "./helper/filter";
+import { Button } from "@mui/material";
 
 function App() {
   const [data, updateData] = useState(null);
@@ -22,23 +21,21 @@ function App() {
   }, []);
 
   const filter = (data) => {
-    let d = {
-      or: [
-        {
-          property: "todo",
-          checkbox: {
-            equals: true,
-          },
+    fetch(`http://localhost:8000/filterSort/`, {
+      method: "POST",
+      body: JSON.stringify({
+        filter: {
+          ...data,
         },
-      ],
-    };
-    fetch(`http://localhost:8000/filterSort/?filter=${JSON.stringify(d)}`)
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
       .then((response) => response.json())
       .then((res) => {
-        const columnsHeadRes = { ...columnsHeadResponse };
-
         updateData({
-          columnsHead: columnsHeadRes,
+          columnsHead: columnsHeadResponse,
           rowsData: res.rowsData,
         });
         console.log("Success:", res);
@@ -57,7 +54,7 @@ function App() {
   }, [columnsHeadResponse]);
 
   const [filterState, updateFilterState] = useState(null);
-  useEffect(() => {
+  const addFirstDefaultFilter = () => {
     if (columnsHead.columnsOrder.length > 0) {
       const defaultSelectedFilter = getPropertyDetail(
         columnsHead.columnsOrder[0],
@@ -78,22 +75,74 @@ function App() {
         ],
       });
     }
+  };
+  useEffect(() => {
+    addFirstDefaultFilter();
   }, [columnsHead]);
 
-  
+  const populateReqFilter = (reqFilters) => {
+    let obj = {};
+    const keys = Object.keys(reqFilters);
+    if (keys.includes("filters")) {
+      const operator = reqFilters["operator"];
+
+      obj[operator] = reqFilters["filters"].map((reqFilter) => {
+        return populateReqFilter(reqFilter);
+      });
+    } else if (keys.includes("filter")) {
+      const {
+        property,
+        filter: { operator, value: { type = "", value = null } = {} },
+      } = reqFilters;
+
+      const prop = columnsHead["columnsIdNameMap"][property];
+      let tempVal = value === null ? "" : value;
+      if (type === "checkbox") {
+        tempVal = tempVal === "checked";
+      }
+
+      obj = {
+        ...obj,
+        property: prop,
+        [type]: {
+          [operator]: tempVal,
+        },
+      };
+    }
+    return obj;
+  };
+  const applyFilter = () => {
+    if (filterState) {
+      console.log(filterState);
+      const obj = populateReqFilter(filterState);
+      console.log(obj);
+      filter(obj);
+    }
+  };
   return (
     <div>
       {!!columnsHead.columnsOrder.length && (
         <TableContainer rowsList={rowsDataResponse} columnsHead={columnsHead} />
       )}
       {!!columnsHead.columnsOrder.length && filterState && (
-        <FilterGroup
-          updateFilterGroup={updateFilterState}
-          data={filterState}
-          columnInfo={columnsHead}
-        />
+        <>
+          <FilterGroup
+            updateFilterGroup={updateFilterState}
+            data={filterState}
+            columnInfo={columnsHead}
+          />
+          <Button onClick={applyFilter}>Apply Filter</Button>
+          {filterState.filters.length === 0 && (
+            <button
+              onClick={() => {
+                addFirstDefaultFilter();
+              }}
+            >
+              filter
+            </button>
+          )}
+        </>
       )}
-      <button onClick={filter}>filter</button>
     </div>
   );
 }

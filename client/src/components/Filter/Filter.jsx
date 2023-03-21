@@ -6,22 +6,28 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { filterField } from "../../helper/filter";
 import useFilter from "./hooks/useFilter";
+import FilterValueFiled from "./FilterValueField";
 const Filter = (props) => {
   const {
-    handleChange,
-    setValue,
-    type,
+    handlePropChange,
+    
     selectedOperator,
     selectedProperty,
-    value,
     columnsOrder,
-    handleOperator
+    handleOperator,
+    operatorsList,
+    defaultOperator,
+    filterField,
+
+    filterFieldOptions,
+    filterFieldOnChange,
+    filterFieldValue,
+    showFilterFieldValue
   } = useFilter(props);
 
   return (
-    <Card>
+    <>
       <Box display="flex">
         <Box
           sx={{
@@ -31,13 +37,14 @@ const Filter = (props) => {
         >
           <Autocomplete
             options={columnsOrder}
-            onChange={handleChange}
+            onChange={handlePropChange}
             value={selectedProperty}
             getOptionLabel={(option) => {
               return option;
             }}
+            disableClearable
             renderInput={(params) => (
-              <TextField {...params} label="Properties" />
+              <TextField {...params} />
             )}
           />
         </Box>
@@ -52,25 +59,25 @@ const Filter = (props) => {
             sx={{
               width: 200,
             }}
-            value={selectedOperator || Object.entries(filterField[type])[0][0]}
+            value={selectedOperator || defaultOperator}
             onChange={handleOperator}
           >
-            {Object.entries(filterField[type]).map(([key, value]) => {
-              return <MenuItem value={key}>{key}</MenuItem>;
+            {operatorsList.map((value) => {
+              return <MenuItem value={value} key={value}>{value}</MenuItem>;
             })}
           </Select>
         </Box>
-        <Box>
-          <TextField
-            placeholder="value"
-            onChange={(e) => {
-              setValue(e.target.value);
-            }}
-            value={value}
+       {showFilterFieldValue ?  <Box>
+          <FilterValueFiled
+            filterField={filterField}
+            options={filterFieldOptions}
+            onChange={filterFieldOnChange}
+            value={filterFieldValue}
           />
-        </Box>
+          
+        </Box> : null}
       </Box>
-    </Card>
+    </>
   );
 };
 

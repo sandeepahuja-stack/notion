@@ -32,7 +32,6 @@ const TableContainer = (props) => {
       const newColumnOrder = [...colOrder];
       newColumnOrder.splice(source.index, 1);
       newColumnOrder.splice(destination.index, 0, draggableId);
-      console.log(newColumnOrder, colOrder);
       updateColumnOrder(newColumnOrder);
     }
   return (

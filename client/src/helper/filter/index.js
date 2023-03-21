@@ -36,4 +36,12 @@ export const filterField = {
     is_empty: 'true',
     is_not_empty: 'true',
   },
+  title: {
+    contains: 'string',
+    is_empty: 'true',
+    is_not_empty: 'true',
+    does_not_contain: 'string',
+    ends_with: 'string',
+    equals: 'string',  
+  }
 };
