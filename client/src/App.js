@@ -1,22 +1,28 @@
-import { useEffect, useMemo, useState } from "react";
-import { populateColumnHead } from "./helper";
-import TableContainer from "./components/TableContainer";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Box, Button } from "@mui/material";
+import { populateColumnHead } from "helper";
+import useModal from "hooks/useModal";
+import Loader from "components/Loader";
 
-import FilterGroup from "./components/FilterGroup/FilterGroup";
-import getPropertyDetail from "./helper/filter/getPropertyId";
-import { filterField } from "./helper/filter";
-import { Button } from "@mui/material";
+const FilterContainer = lazy(() => import("components/FilterContainer"));
+
+const TableContainer = lazy(() => import("components/TableContainer"));
 
 function App() {
   const [data, updateData] = useState(null);
   const { columnsHead: columnsHeadResponse, rowsData: rowsDataResponse } =
     data || { columnsHead: {}, rowsData: [] };
 
+  const [isLoading, setLoading] = useState(true);
   useEffect(() => {
     fetch("http://localhost:8000/")
       .then((response) => response.json())
       .then((payload) => {
+        setLoading(false);
         updateData(payload);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -53,96 +59,53 @@ function App() {
     return populateColumnHead(columnsHeadResponse);
   }, [columnsHeadResponse]);
 
-  const [filterState, updateFilterState] = useState(null);
-  const addFirstDefaultFilter = () => {
-    if (columnsHead.columnsOrder.length > 0) {
-      const defaultSelectedFilter = getPropertyDetail(
-        columnsHead.columnsOrder[0],
-        columnsHead.columnsDetails
-      );
-      const defaultSelectedFilterOperator = Object.keys(
-        filterField[defaultSelectedFilter["type"]]
-      )[0];
-      updateFilterState({
-        operator: "and",
-        filters: [
-          {
-            property: defaultSelectedFilter.id,
-            filter: {
-              operator: defaultSelectedFilterOperator,
-            },
-          },
-        ],
-      });
-    }
-  };
-  useEffect(() => {
-    addFirstDefaultFilter();
-  }, [columnsHead]);
-
-  const populateReqFilter = (reqFilters) => {
-    let obj = {};
-    const keys = Object.keys(reqFilters);
-    if (keys.includes("filters")) {
-      const operator = reqFilters["operator"];
-
-      obj[operator] = reqFilters["filters"].map((reqFilter) => {
-        return populateReqFilter(reqFilter);
-      });
-    } else if (keys.includes("filter")) {
-      const {
-        property,
-        filter: { operator, value: { type = "", value = null } = {} },
-      } = reqFilters;
-
-      const prop = columnsHead["columnsIdNameMap"][property];
-      let tempVal = value === null ? "" : value;
-      if (type === "checkbox") {
-        tempVal = tempVal === "checked";
-      }
-
-      obj = {
-        ...obj,
-        property: prop,
-        [type]: {
-          [operator]: tempVal,
-        },
-      };
-    }
-    return obj;
-  };
-  const applyFilter = () => {
-    if (filterState) {
-      console.log(filterState);
-      const obj = populateReqFilter(filterState);
-      console.log(obj);
-      filter(obj);
-    }
-  };
+  const { handleClose, open, handleOpen } = useModal();
+  if (isLoading) return <Loader />;
   return (
     <div>
-      {!!columnsHead.columnsOrder.length && (
-        <TableContainer rowsList={rowsDataResponse} columnsHead={columnsHead} />
-      )}
-      {!!columnsHead.columnsOrder.length && filterState && (
+      {!!(columnsHead.columnsOrder.length > 0) && (
         <>
-          <FilterGroup
-            updateFilterGroup={updateFilterState}
-            data={filterState}
-            columnInfo={columnsHead}
-          />
-          <Button onClick={applyFilter}>Apply Filter</Button>
-          {filterState.filters.length === 0 && (
-            <button
-              onClick={() => {
-                addFirstDefaultFilter();
-              }}
-            >
-              filter
-            </button>
-          )}
+          <Box textAlign="right" width="100%">
+            <Button onClick={handleOpen}>Filter</Button>
+          </Box>
+          <Suspense
+            fallback={
+              <Box
+                sx={{
+                  m: 10,
+                }}
+              >
+                Loading Filter...{" "}
+              </Box>
+            }
+          >
+            <FilterContainer
+              handleClose={handleClose}
+              open={open}
+              columnsHead={columnsHead}
+              filter={filter}
+            />
+          </Suspense>
         </>
       )}
+      <Suspense
+        fallback={
+          <Box
+            sx={{
+              m: 10,
+            }}
+          >
+            Loading Table...{" "}
+          </Box>
+        }
+      >
+        {!!columnsHead.columnsOrder.length && (
+          <TableContainer
+            rowsList={rowsDataResponse}
+            columnsHead={columnsHead}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { filterField as filterFieldMap } from "../../../helper/filter";
-import getOperators from "../../../helper/filter/getOperators";
-import getPropertyDetail from "../../../helper/filter/getPropertyId";
+import { filterField as filterFieldMap } from "helper/filter";
+import getOperators from "helper/filter/getOperators";
+import getPropertyDetail from "helper/filter/getPropertyId";
 
 const useFilter = (props) => {
   const { columnInfo, updateFilter, data } = props;
@@ -35,7 +35,7 @@ const useFilter = (props) => {
   useEffect(() => {
     if (value || selectedOperator || selectedProperty) {
       const propDetail = getPropertyDetail(selectedProperty, columnsDetails);
-      const { id, name, type } = propDetail;
+      const { id, type } = propDetail;
       let val = value;
 
       if (type === "number") {
@@ -56,7 +56,7 @@ const useFilter = (props) => {
       };
       updateFilter(obj);
     }
-  }, [value, selectedOperator, selectedProperty, filterField]);
+  }, [value, selectedOperator, selectedProperty, filterField, columnsDetails, updateFilter]);
 
   const handlePropChange = (event, property) => {
     setProperty(property);
@@ -97,7 +97,7 @@ const useFilter = (props) => {
     return {
       filterFieldOptions: options || [],
     };
-  }, [selectedProperty, filterField]);
+  }, [selectedProperty, filterField, columnsDetails]);
   
   return {
     columnsOrder,
