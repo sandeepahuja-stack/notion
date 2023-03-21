@@ -1,12 +1,12 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect } from "react";
 import Box from "@mui/material/Box";
 
 import Modal from "@mui/material/Modal";
 import FilterGroup from "components/FilterGroup";
 import { Button } from "@mui/material";
-import populateReqFilter from "helper/filter/populateReuqestFilter";
 import getPropertyDetail from "helper/filter/getPropertyId";
 import { filterField } from "helper/filter";
+import useModal from "hooks/useModal";
 
 const style = {
   position: "absolute",
@@ -21,8 +21,9 @@ const style = {
 };
 
 function FilterContainer(props) {
-  const { handleClose, open, columnsHead, filter, filterState, updateFilterState } = props;
-  
+  const { columnsHead, filterCall, filterState, updateFilterState } = props;
+
+  const { handleClose, open, handleOpen } = useModal();
   const addFirstDefaultFilter = () => {
     if (columnsHead.columnsOrder.length > 0) {
       const defaultSelectedFilter = getPropertyDetail(
@@ -50,20 +51,15 @@ function FilterContainer(props) {
   }, [columnsHead]);
 
   const applyFilter = () => {
-    
-      const obj = populateReqFilter(
-        filterState,
-        columnsHead["columnsIdNameMap"]
-      );
-      filter({
-        filter: obj
-      });
-      handleClose();
+
+    filterCall();
+    handleClose();
   };
 
   if (!filterState) return;
   return (
-    <div>
+    <>
+      <Button onClick={handleOpen}>Filter</Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -99,7 +95,7 @@ function FilterContainer(props) {
           </Box>
         </Box>
       </Modal>
-    </div>
+    </>
   );
 }
 export default memo(FilterContainer);

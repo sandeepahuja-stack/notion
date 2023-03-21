@@ -2,6 +2,7 @@ import { Autocomplete, MenuItem, Select, TextField } from "@mui/material";
 
 const FilterValueFiled = (props) => {
   const { filterField, options = [], onChange, value = "" } = props;
+
   switch (filterField) {
     case "select":
     case "checkbox":
@@ -26,19 +27,17 @@ const FilterValueFiled = (props) => {
     case "status":
       let opt = [...options];
 
-      console.log(opt, value);
       return (
         <Autocomplete
           sx={{
             width: 200,
           }}
+          // unable to find multi select filter api doc
           // multiple
           options={opt}
           onChange={onChange}
           value={value.length > 0 ? value : opt[0]}
-          // getOptionLabel={(option) => option.name}
-          // getOptionSelected={(option, value) => option.name === value.name}
-          // isOptionEqualToValue={(option, value) => option.name === value.name}
+          
           disableClearable
           renderInput={(params) => <TextField {...params} />}
         />
@@ -49,6 +48,7 @@ const FilterValueFiled = (props) => {
         <TextField
           onChange={onChange}
           value={value}
+          type={filterField === 'date' ? 'date' : 'text'}
           sx={{
             width: 200,
           }}

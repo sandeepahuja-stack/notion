@@ -1,16 +1,11 @@
-import {
-  Autocomplete,
-  Box,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Box, MenuItem, Select } from "@mui/material";
 import useFilter from "./hooks/useFilter";
 import FilterValueFiled from "./FilterValueField";
+import ColumnHeadSelect from "./ColumnHeadSelect";
 const Filter = (props) => {
   const {
     handlePropChange,
-    
+
     selectedOperator,
     selectedProperty,
     columnsOrder,
@@ -22,31 +17,17 @@ const Filter = (props) => {
     filterFieldOptions,
     filterFieldOnChange,
     filterFieldValue,
-    showFilterFieldValue
+    showFilterFieldValue,
   } = useFilter(props);
 
   return (
     <>
       <Box display="flex">
-        <Box
-          sx={{
-            display: "inline-block",
-            width: 200,
-          }}
-        >
-          <Autocomplete
-            options={columnsOrder}
-            onChange={handlePropChange}
-            value={selectedProperty}
-            getOptionLabel={(option) => {
-              return option;
-            }}
-            disableClearable
-            renderInput={(params) => (
-              <TextField {...params} />
-            )}
-          />
-        </Box>
+        <ColumnHeadSelect
+          options={columnsOrder}
+          onChange={handlePropChange}
+          value={selectedProperty}
+        />
 
         <Box
           sx={{
@@ -62,19 +43,24 @@ const Filter = (props) => {
             onChange={handleOperator}
           >
             {operatorsList.map((value) => {
-              return <MenuItem value={value} key={value}>{value}</MenuItem>;
+              return (
+                <MenuItem value={value} key={value}>
+                  {value}
+                </MenuItem>
+              );
             })}
           </Select>
         </Box>
-       {showFilterFieldValue ?  <Box>
-          <FilterValueFiled
-            filterField={filterField}
-            options={filterFieldOptions}
-            onChange={filterFieldOnChange}
-            value={filterFieldValue}
-          />
-          
-        </Box> : null}
+        {showFilterFieldValue ? (
+          <Box>
+            <FilterValueFiled
+              filterField={filterField}
+              options={filterFieldOptions}
+              onChange={filterFieldOnChange}
+              value={filterFieldValue}
+            />
+          </Box>
+        ) : null}
       </Box>
     </>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { filterField as filterFieldMap } from "helper/filter";
 import getOperators from "helper/filter/getOperators";
 import getPropertyDetail from "helper/filter/getPropertyId";
@@ -61,6 +61,7 @@ const useFilter = (props) => {
     if (filterField === "multi_select" || filterField === "status") {
       tempVal = val;
     }
+
     setValue(tempVal);
 
     handleFieldsChange({
@@ -69,6 +70,7 @@ const useFilter = (props) => {
       operator: selectedOperator,
     });
   };
+
   const { filterFieldOptions } = useMemo(() => {
     let options =
       getPropertyDetail(selectedProperty, columnsDetails)?.[filterField]?.[

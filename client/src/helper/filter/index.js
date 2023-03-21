@@ -43,5 +43,11 @@ export const filterField = {
     does_not_contain: 'string',
     ends_with: 'string',
     equals: 'string',  
+  },
+  date:{
+    on_or_after: 'string',
+    is_empty: 'true',
+    is_not_empty: 'true',
   }
+
 };
