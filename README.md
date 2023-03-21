@@ -1,4 +1,4 @@
-# notion
+# notion table practice
 
 
 ## Get Started
