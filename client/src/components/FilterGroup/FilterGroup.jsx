@@ -112,7 +112,7 @@ const FilterGroup = (props) => {
                   >
                     <Button
                       variant="contained"
-                      color="info"
+                      color="error"
                       onClick={() => {
                         removeFilter(i);
                       }}

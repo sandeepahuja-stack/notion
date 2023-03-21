@@ -3,6 +3,8 @@ import { Box, Button } from "@mui/material";
 import { populateColumnHead } from "helper";
 import useModal from "hooks/useModal";
 import Loader from "components/Loader";
+import fetchTableData from "services/fetchTableData";
+import fetchFilterData from "services/fetchFilterData";
 
 const FilterContainer = lazy(() => import("components/FilterContainer"));
 
@@ -12,44 +14,23 @@ function App() {
   const [data, updateData] = useState(null);
   const { columnsHead: columnsHeadResponse, rowsData: rowsDataResponse } =
     data || { columnsHead: {}, rowsData: [] };
+  const [filterState, updateFilterState] = useState(null);
 
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
-    fetch("http://localhost:8000/")
-      .then((response) => response.json())
-      .then((payload) => {
+    fetchTableData({
+      onSuccess: (data) => {
+        updateData(data);
+      },
+      onFinally: () => {
         setLoading(false);
-        updateData(payload);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      },
+      onFailure: (err) => {
+        console.log(err);
+      },
+    });
   }, []);
 
-  const filter = (data) => {
-    fetch(`http://localhost:8000/filterSort/`, {
-      method: "POST",
-      body: JSON.stringify({
-        filter: {
-          ...data,
-        },
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((res) => {
-        updateData({
-          columnsHead: columnsHeadResponse,
-          rowsData: res.rowsData,
-        });
-        console.log("Success:", res);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
 
   // const rowsData = useMemo(() => {
   //   return populateRowData(rowsDataResponse);
@@ -59,10 +40,30 @@ function App() {
     return populateColumnHead(columnsHeadResponse);
   }, [columnsHeadResponse]);
 
+
+  const filter = (body) => {
+    setLoading(true);
+    fetchFilterData({
+      body,
+      onSuccess: (data) => {
+        updateData({
+          columnsHead: columnsHeadResponse,
+          rowsData: data.rowsData,
+        });
+      },
+      onFinally: () => {
+        setLoading(false);
+      },
+      onFailure: (err) => {
+        console.log(err);
+      },
+    });
+  };
   const { handleClose, open, handleOpen } = useModal();
-  if (isLoading) return <Loader />;
+
   return (
     <div>
+      {isLoading && <Loader />}
       {!!(columnsHead.columnsOrder.length > 0) && (
         <>
           <Box textAlign="right" width="100%">
@@ -84,6 +85,9 @@ function App() {
               open={open}
               columnsHead={columnsHead}
               filter={filter}
+              filterState={filterState}
+              updateFilterState={updateFilterState}
+              updateData={updateData}
             />
           </Suspense>
         </>
@@ -100,10 +104,16 @@ function App() {
         }
       >
         {!!columnsHead.columnsOrder.length && (
-          <TableContainer
-            rowsList={rowsDataResponse}
-            columnsHead={columnsHead}
-          />
+          <Box
+            sx={{
+              opacity: isLoading ? 0.2 : 1,
+            }}
+          >
+            <TableContainer
+              rowsList={rowsDataResponse}
+              columnsHead={columnsHead}
+            />
+          </Box>
         )}
       </Suspense>
     </div>
