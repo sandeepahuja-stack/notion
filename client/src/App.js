@@ -1,13 +1,14 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import { populateColumnHead } from "helper";
-import useModal from "hooks/useModal";
 import Loader from "components/Loader";
 import fetchTableData from "services/fetchTableData";
 import fetchFilterData from "services/fetchFilterData";
 
-const FilterContainer = lazy(() => import("components/FilterContainer"));
+import populateReqFilter from "helper/filter/populateReuqestFilter";
 
+const FilterContainer = lazy(() => import("components/FilterContainer"));
+const SortContainer = lazy(() => import("components/SortContainer"));
 const TableContainer = lazy(() => import("components/TableContainer"));
 
 function App() {
@@ -17,6 +18,8 @@ function App() {
   const [filterState, updateFilterState] = useState(null);
 
   const [isLoading, setLoading] = useState(true);
+
+  const [sortState, updateSortState] = useState([]);
   useEffect(() => {
     fetchTableData({
       onSuccess: (data) => {
@@ -41,10 +44,22 @@ function App() {
   }, [columnsHeadResponse]);
 
 
-  const filter = (body) => {
+  const filterCall = () => {
     setLoading(true);
+
+    const filterReqobj = filterState ? populateReqFilter(
+      filterState,
+      columnsHead["columnsIdNameMap"],
+      columnsHead.columnsDetails
+    ) : null;
+    const sortReqObj = sortState.length > 0 ? sortState: null;
+
     fetchFilterData({
-      body,
+      body:{
+        ...(filterReqobj && {filter: filterReqobj}),
+        ...(sortReqObj && {sorts: sortReqObj}),
+        
+      },
       onSuccess: (data) => {
         updateData({
           columnsHead: columnsHeadResponse,
@@ -59,16 +74,16 @@ function App() {
       },
     });
   };
-  const { handleClose, open, handleOpen } = useModal();
 
+  
   return (
     <div>
       {isLoading && <Loader />}
       {!!(columnsHead.columnsOrder.length > 0) && (
         <>
-          <Box textAlign="right" width="100%">
-            <Button onClick={handleOpen}>Filter</Button>
-          </Box>
+          
+            
+          
           <Suspense
             fallback={
               <Box
@@ -80,16 +95,19 @@ function App() {
               </Box>
             }
           >
+            <SortContainer
+            columnsHead={columnsHead}  sortState={sortState} updateSortState={updateSortState} 
+            filterCall={filterCall}
+            />
             <FilterContainer
-              handleClose={handleClose}
-              open={open}
               columnsHead={columnsHead}
-              filter={filter}
+              filterCall={filterCall}
               filterState={filterState}
               updateFilterState={updateFilterState}
               updateData={updateData}
             />
           </Suspense>
+          
         </>
       )}
       <Suspense
