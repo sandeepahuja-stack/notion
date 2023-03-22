@@ -64,7 +64,9 @@ function FilterContainer(props) {
 
   return (
     <>
-      <Button onClick={handleOpen}>Filter</Button>
+      <Button onClick={handleOpen} sx={{
+        m: '10px'
+      }}>Filter</Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -83,6 +85,7 @@ function FilterContainer(props) {
               data={filterState}
               columnInfo={columnsHead}
               handleGroupDelete={handleGroupDelete}
+              isRoot
             />
             {filterState.filters.length === 0 && (
               <Button

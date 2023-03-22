@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/material";
-import { populateColumnHead } from "helper";
+import { populateColumnHead, populateRowData } from "helper";
 import Loader from "components/Loader";
 import fetchTableData from "services/fetchTableData";
 import fetchFilterData from "services/fetchFilterData";
@@ -60,12 +60,13 @@ const theme = createTheme({
         },
       },
     },
-    
   },
 });
 const FilterContainer = lazy(() => import("components/FilterContainer"));
 const SortContainer = lazy(() => import("components/SortContainer"));
-const TableContainer = lazy(() => import("components/TableContainer"));
+const Table = lazy(() => import("components/common/Table"));
+
+// const TableContainer = lazy(() => import("components/TableContainer"));
 
 function App() {
   const [data, updateData] = useState(null);
@@ -90,14 +91,13 @@ function App() {
     });
   }, []);
 
-  // const rowsData = useMemo(() => {
-  //   return populateRowData(rowsDataResponse);
-  // }, [rowsDataResponse]);
-
   const columnsHead = useMemo(() => {
     return populateColumnHead(columnsHeadResponse);
   }, [columnsHeadResponse]);
 
+  const rowsData = useMemo(() => {
+    return populateRowData(rowsDataResponse, columnsHead.columnsOrder);
+  }, [rowsDataResponse, columnsHead]);
   const filterCall = () => {
     setLoading(true);
 
@@ -147,19 +147,21 @@ function App() {
                 </Box>
               }
             >
-              <SortContainer
-                columnsHead={columnsHead}
-                sortState={sortState}
-                updateSortState={updateSortState}
-                filterCall={filterCall}
-              />
-              <FilterContainer
-                columnsHead={columnsHead}
-                filterCall={filterCall}
-                filterState={filterState}
-                updateFilterState={updateFilterState}
-                updateData={updateData}
-              />
+              <Box textAlign="right">
+                <SortContainer
+                  columnsHead={columnsHead}
+                  sortState={sortState}
+                  updateSortState={updateSortState}
+                  filterCall={filterCall}
+                />
+                <FilterContainer
+                  columnsHead={columnsHead}
+                  filterCall={filterCall}
+                  filterState={filterState}
+                  updateFilterState={updateFilterState}
+                  updateData={updateData}
+                />
+              </Box>
             </Suspense>
           </>
         )}
@@ -180,10 +182,14 @@ function App() {
                 opacity: isLoading ? 0.2 : 1,
               }}
             >
-              <TableContainer
+              <Table
+                data={rowsData.rowsDataToShow}
+                columns={columnsHead.colsToShow}
+              />
+              {/* <TableContainer
                 rowsList={rowsDataResponse}
                 columnsHead={columnsHead}
-              />
+              /> */}
             </Box>
           )}
         </Suspense>
