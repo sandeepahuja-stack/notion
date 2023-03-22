@@ -24,6 +24,7 @@ function FilterContainer(props) {
   const { columnsHead, filterCall, filterState, updateFilterState } = props;
 
   const { handleClose, open, handleOpen } = useModal();
+  
   const addFirstDefaultFilter = () => {
     if (columnsHead.columnsOrder.length > 0) {
       const defaultSelectedFilter = getPropertyDetail(
@@ -60,6 +61,7 @@ function FilterContainer(props) {
     deepObj.filters.splice(index, 1);
     updateFilterState(deepObj);
   };
+
   if (!filterState) return;
 
   return (
@@ -86,6 +88,7 @@ function FilterContainer(props) {
               columnInfo={columnsHead}
               handleGroupDelete={handleGroupDelete}
               isRoot
+              nestedCount={0}
             />
             {filterState.filters.length === 0 && (
               <Button
