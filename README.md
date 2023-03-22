@@ -16,7 +16,7 @@
    npm install
 ```
 
-#### Running an app in server (port: 8000) and client (port : 3000)
+#### Running an app in server (port: 8000) and client 
 
 ```  
    cd client 
