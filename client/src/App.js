@@ -6,7 +6,63 @@ import fetchTableData from "services/fetchTableData";
 import fetchFilterData from "services/fetchFilterData";
 
 import populateReqFilter from "helper/filter/populateReuqestFilter";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
+const theme = createTheme({
+  components: {
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          fontSize: "12px",
+          padding: "0",
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          fontSize: "12px",
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          fontSize: "12px",
+        },
+      },
+    },
+    MuiInput: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          fontSize: "12px",
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          fontSize: "12px",
+          padding: "0",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          fontSize: "12px",
+        },
+      },
+    },
+    
+  },
+});
 const FilterContainer = lazy(() => import("components/FilterContainer"));
 const SortContainer = lazy(() => import("components/SortContainer"));
 const TableContainer = lazy(() => import("components/TableContainer"));
@@ -34,7 +90,6 @@ function App() {
     });
   }, []);
 
-
   // const rowsData = useMemo(() => {
   //   return populateRowData(rowsDataResponse);
   // }, [rowsDataResponse]);
@@ -43,22 +98,22 @@ function App() {
     return populateColumnHead(columnsHeadResponse);
   }, [columnsHeadResponse]);
 
-
   const filterCall = () => {
     setLoading(true);
 
-    const filterReqobj = filterState ? populateReqFilter(
-      filterState,
-      columnsHead["columnsIdNameMap"],
-      columnsHead.columnsDetails
-    ) : null;
-    const sortReqObj = sortState.length > 0 ? sortState: null;
+    const filterReqobj = filterState
+      ? populateReqFilter(
+          filterState,
+          columnsHead["columnsIdNameMap"],
+          columnsHead.columnsDetails
+        )
+      : null;
+    const sortReqObj = sortState.length > 0 ? sortState : null;
 
     fetchFilterData({
-      body:{
-        ...(filterReqobj && {filter: filterReqobj}),
-        ...(sortReqObj && {sorts: sortReqObj}),
-        
+      body: {
+        ...(filterReqobj && { filter: filterReqobj }),
+        ...(sortReqObj && { sorts: sortReqObj }),
       },
       onSuccess: (data) => {
         updateData({
@@ -75,66 +130,65 @@ function App() {
     });
   };
 
-  
   return (
-    <div>
-      {isLoading && <Loader />}
-      {!!(columnsHead.columnsOrder.length > 0) && (
-        <>
-          
-            
-          
-          <Suspense
-            fallback={
-              <Box
-                sx={{
-                  m: 10,
-                }}
-              >
-                Loading Filter...{" "}
-              </Box>
-            }
-          >
-            <SortContainer
-            columnsHead={columnsHead}  sortState={sortState} updateSortState={updateSortState} 
-            filterCall={filterCall}
-            />
-            <FilterContainer
-              columnsHead={columnsHead}
-              filterCall={filterCall}
-              filterState={filterState}
-              updateFilterState={updateFilterState}
-              updateData={updateData}
-            />
-          </Suspense>
-          
-        </>
-      )}
-      <Suspense
-        fallback={
-          <Box
-            sx={{
-              m: 10,
-            }}
-          >
-            Loading Table...{" "}
-          </Box>
-        }
-      >
-        {!!columnsHead.columnsOrder.length && (
-          <Box
-            sx={{
-              opacity: isLoading ? 0.2 : 1,
-            }}
-          >
-            <TableContainer
-              rowsList={rowsDataResponse}
-              columnsHead={columnsHead}
-            />
-          </Box>
+    <ThemeProvider theme={theme}>
+      <div>
+        {isLoading && <Loader />}
+        {!!(columnsHead.columnsOrder.length > 0) && (
+          <>
+            <Suspense
+              fallback={
+                <Box
+                  sx={{
+                    m: 10,
+                  }}
+                >
+                  Loading Filter...{" "}
+                </Box>
+              }
+            >
+              <SortContainer
+                columnsHead={columnsHead}
+                sortState={sortState}
+                updateSortState={updateSortState}
+                filterCall={filterCall}
+              />
+              <FilterContainer
+                columnsHead={columnsHead}
+                filterCall={filterCall}
+                filterState={filterState}
+                updateFilterState={updateFilterState}
+                updateData={updateData}
+              />
+            </Suspense>
+          </>
         )}
-      </Suspense>
-    </div>
+        <Suspense
+          fallback={
+            <Box
+              sx={{
+                m: 10,
+              }}
+            >
+              Loading Table...{" "}
+            </Box>
+          }
+        >
+          {!!columnsHead.columnsOrder.length && (
+            <Box
+              sx={{
+                opacity: isLoading ? 0.2 : 1,
+              }}
+            >
+              <TableContainer
+                rowsList={rowsDataResponse}
+                columnsHead={columnsHead}
+              />
+            </Box>
+          )}
+        </Suspense>
+      </div>
+    </ThemeProvider>
   );
 }
 
