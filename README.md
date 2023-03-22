@@ -55,11 +55,13 @@ server/
 ## Tools Used
 - [React] (https://reactjs.org/) - overall app based on react
 - [Material Ui] (https://mui.com/material-ui/getting-started/overview/) - UI Components
-
 - [axios]: For Api calls
-- [react-beautiful-dnd] (https://github.com/atlassian/react-beautiful-dnd)
+- [material-react-table] (https://www.material-react-table.com/) Both drag & drop and resizing feature is available
+
+// previously using 
+- [react-beautiful-dnd] (https://github.com/atlassian/react-beautiful-dnd)  implemented but not using 
 
 
 ```
-  Note: There are some bugs which can be solved but due to time constraint unable to do all the feature
+  Note: There are some bugs which can be solved but due to time constraint unable to do stretch target
 ```
