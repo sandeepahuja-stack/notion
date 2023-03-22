@@ -7,7 +7,7 @@ import {
   Select,
 } from "@mui/material";
 import Filter from "../Filter";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 const FilterGroup = (props) => {
   const {
@@ -17,7 +17,9 @@ const FilterGroup = (props) => {
     index = 0,
     handleGroupDelete,
     isRoot = false,
+    nestedCount, 
   } = props;
+  
   const [operator, setOperator] = useState(data.operator);
   const handleUpdateFilterGroup = (index, updateData) => {
     const dataCopy = JSON.parse(JSON.stringify(data));
@@ -37,6 +39,8 @@ const FilterGroup = (props) => {
   const addFilter = (lastFilterIndex, isGroup = false) => {
     const newFilterData = data.filters[lastFilterIndex];
     if (isGroup) {
+      
+      console.log(nestedCount, index);
       handleUpdateFilterGroup(data.filters.length, {
         operator: "or",
         filters: [newFilterData],
@@ -116,6 +120,8 @@ const FilterGroup = (props) => {
                         updateFilterGroup={(data) =>
                           handleUpdateFilterGroup(i, data)
                         }
+                        
+                        nestedCount={nestedCount+1}
                         columnInfo={columnInfo}
                         index={i}
                         handleGroupDelete={() => removeUpdateFilterGroup(i)}
@@ -159,21 +165,27 @@ const FilterGroup = (props) => {
                 justifyContent: "space-between",
               }}
             >
-              <Button
-                onClick={() => addFilter(lastFilterIndex)}
-                color="primary"
-                variant="contained"
-              >
-                Add Filter
-              </Button>
-
-              <Button
-                onClick={() => addFilter(lastFilterIndex, true)}
-                color="secondary"
-                variant="contained"
-              >
-                Add Filter Group
-              </Button>
+              <Box>
+                <Button
+                  onClick={() => addFilter(lastFilterIndex)}
+                  color="primary"
+                  variant="contained"
+                  sx={{
+                    marginRight: "10px",
+                  }}
+                >
+                  Add Filter
+                </Button>
+                {nestedCount < 5 && (
+                  <Button
+                    onClick={() => addFilter(lastFilterIndex, true)}
+                    color="secondary"
+                    variant="contained"
+                  >
+                    Add Filter Group
+                  </Button>
+                )}
+              </Box>
               {!isRoot && (
                 <Button
                   onClick={() => handleGroupDelete(index)}
