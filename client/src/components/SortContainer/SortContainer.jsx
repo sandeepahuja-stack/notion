@@ -9,18 +9,6 @@ import useModal from "hooks/useModal";
 
 import Sort from "./Sort";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80%",
-  height: "700px",
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
-
 function SortContainer(props) {
   const { columnsHead, sortState, updateSortState, filterCall } = props;
   const { columnsOrder = [] } = columnsHead;
@@ -48,16 +36,20 @@ function SortContainer(props) {
     });
     updateSortState(tempSort);
   };
-  const applySort=()=>{
+  const applySort = () => {
     handleClose();
     filterCall();
-    
-  }
+  };
   return (
     <>
-      <Button onClick={handleOpen} sx={{
-        my: '10px'
-      }} >Sort</Button>
+      <Button
+        onClick={handleOpen}
+        sx={{
+          my: "10px",
+        }}
+      >
+        Sort
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -65,7 +57,7 @@ function SortContainer(props) {
         aria-describedby="modal-modal-description"
       >
         <ModalContainer>
-          {(sortState||[]).map(({ property, direction }, i) => {
+          {(sortState || []).map(({ property, direction }, i) => {
             return (
               <Box as="div" m="10px" key={`${property}_${i}_${direction}`}>
                 <Sort
@@ -84,9 +76,10 @@ function SortContainer(props) {
             <Button onClick={addSort}>Add Sort</Button>
           )}
 
-          <Box textAlign='right'><Button onClick={applySort} >Apply Sort</Button></Box>
-          </ModalContainer>
-        
+          <Box textAlign="right">
+            <Button onClick={applySort}>Apply Sort</Button>
+          </Box>
+        </ModalContainer>
       </Modal>
     </>
   );
