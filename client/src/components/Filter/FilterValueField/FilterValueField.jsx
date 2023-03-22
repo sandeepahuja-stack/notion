@@ -1,8 +1,12 @@
 import { Autocomplete, MenuItem, Select, TextField } from "@mui/material";
+import { useState } from "react";
 
 const FilterValueFiled = (props) => {
   const { filterField, options = [], onChange, value = "" } = props;
-
+  const [query, setQuery] = useState(value);
+  const onQueryChange=(e)=>{
+    setQuery(e.target.value)
+  }
   switch (filterField) {
     case "select":
     case "checkbox":
@@ -46,9 +50,10 @@ const FilterValueFiled = (props) => {
     default:
       return (
         <TextField
-          onChange={onChange}
-          value={value}
-          type={filterField === 'date' ? 'date' : 'text'}
+          onChange={onQueryChange}
+          type={filterField}
+          onBlur={onChange}
+          value={query}
           sx={{
             width: 200,
           }}
