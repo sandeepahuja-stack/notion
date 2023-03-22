@@ -1,6 +1,7 @@
 import { Button, MenuItem, Select } from "@mui/material";
 import { Box } from "@mui/system";
 import ColumnHeadSelect from "components/Filter/ColumnHeadSelect";
+import { DIRECTION_LIST } from "constants ";
 
 const Sort = (props) => {
   const {
@@ -20,11 +21,10 @@ const Sort = (props) => {
       tempSort[index].direction = event.target.value;
     } else {
       tempSort.splice(index, 1);
-      console.log(tempSort);
     }
     updateSortState(tempSort);
   };
-  const directionList = ["ascending", "descending"];
+  
 
   return (
     <>
@@ -46,7 +46,7 @@ const Sort = (props) => {
             value={direction}
             onChange={handleChange("direction")}
           >
-            {directionList.map((value) => {
+            {DIRECTION_LIST.map((value) => {
               return (
                 <MenuItem value={value} key={value}>
                   {value}
