@@ -1,7 +1,6 @@
 import { memo } from "react";
 
-import  { Autocomplete, Box, TextField } from "@mui/material";
-
+import { Autocomplete, Box, TextField } from "@mui/material";
 
 const ColumnHeadSelect = (props) => {
   const { options, value, onChange } = props;
@@ -13,6 +12,7 @@ const ColumnHeadSelect = (props) => {
       }}
     >
       <Autocomplete
+        size="small"
         options={options}
         onChange={onChange}
         value={value}

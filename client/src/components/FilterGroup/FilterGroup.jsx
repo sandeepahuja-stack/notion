@@ -1,14 +1,36 @@
-import { Box, Button, MenuItem, Select } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import Filter from "../Filter";
-import React, {  useState } from "react";
+import React, { useState } from "react";
 
 const FilterGroup = (props) => {
-  const { data, updateFilterGroup, columnInfo, index = -1 } = props;
+  const {
+    data,
+    updateFilterGroup,
+    columnInfo,
+    index = 0,
+    handleGroupDelete,
+  } = props;
 
   const handleUpdateFilterGroup = (index, updateData) => {
     const dataCopy = JSON.parse(JSON.stringify(data));
     dataCopy.filters[index] = updateData;
     updateFilterGroup(dataCopy);
+  };
+
+  const removeUpdateFilterGroup = (index) => {
+    const dataCopy = JSON.parse(JSON.stringify(data));
+    // dataCopy.filters[index] = updateData;
+    console.log(data);
+    dataCopy.filters.splice(index, 1);
+    updateFilterGroup(dataCopy);
+    console.log(dataCopy);
   };
 
   const removeFilter = (index) => {
@@ -41,102 +63,135 @@ const FilterGroup = (props) => {
   const operatorsList = ["or", "and"];
   return (
     <>
-      <Box
-        sx={{
-          marginLeft: "20px",
-        }}
-      >
-        {(data.filters || []).map((filterObj, i) => {
-          if (!filterObj) return null;
-          lastFilterIndex = "filters" in filterObj ? lastFilterIndex : i;
-          let key = `${data.operator}_${index}_${i}_${lastFilterIndex}`;
-
-          if (!("filters" in filterObj)) {
-            const { property = "", filter = {} } = filterObj || {};
-            const { type = "", value = "" } = filter;
-            key = `${key}_${type}_${property}_${
-              typeof value === "object" ? JSON.stringify(value) : value
-            }`;
-          }
-
-          return (
-            <Box key={key}>
-              {i !== 0 ? data.operator : "WHERE"}
-              {i === 1 ? (
-                <Select
-                  sx={{
-                    width: 100,
-                    height: 30,
-                    fontSize: 12,
-                  }}
-                  value={operator}
-                  onChange={handleOperator}
-                >
-                  {operatorsList.map((value) => {
-                    return (
-                      <MenuItem value={value} key={value}>
-                        {value}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-              ) : null}
-              {"filters" in filterObj ? (
-                <>
-                  <FilterGroup
-                    data={filterObj}
-                    updateFilterGroup={(data) =>
-                      handleUpdateFilterGroup(i, data)
-                    }
-                    columnInfo={columnInfo}
-                    index={i}
-                  />
-                </>
-              ) : (
-                <Box
-                  style={{
-                    padding: "10px",
-                  }}
-                >
-                  <Filter
-                    data={filterObj}
-                    updateFilter={(data) => handleUpdateFilterGroup(i, data)}
-                    columnInfo={columnInfo}
-                    lastIndex={i === data?.filters.length - 1}
-                    index={i}
-                  />
-                  <Box
-                    style={{
-                      padding: "10px",
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => {
-                        removeFilter(i);
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </Box>
-                </Box>
-              )}
-            </Box>
-          );
-        })}
-        <Box
+      {data.filters.length > 0 && (
+        <Card
           sx={{
-            p: "10px 5px",
+            border: "1px solid #dfdfdf",
           }}
         >
-          <Button onClick={() => addFilter(lastFilterIndex)}>Add Filter</Button>
+          <CardContent>
+            {(data.filters || []).map((filterObj, i) => {
+              if (!filterObj) return null;
+              lastFilterIndex = "filters" in filterObj ? lastFilterIndex : i;
+              let key = `${data.operator}_${index}_${i}_${lastFilterIndex}`;
 
-          <Button onClick={() => addFilter(lastFilterIndex, true)}>
-            Add Filter Group
-          </Button>
-        </Box>
-      </Box>
+              if (!("filters" in filterObj)) {
+                const { property = "", filter = {} } = filterObj || {};
+                const { type = "", value = "" } = filter;
+                key = `${key}_${type}_${property}_${
+                  typeof value === "object" ? JSON.stringify(value) : value
+                }`;
+              }
+
+              return (
+                <Box key={key}>
+                  <Box
+                    sx={{
+                      my: "10px",
+                    }}
+                  >
+                    {i === 1 ? (
+                      <Select
+                        sx={
+                          {
+                            // width: 100,
+                            // height: 30,
+                            // fontSize: 12,
+                          }
+                        }
+                        value={operator}
+                        onChange={handleOperator}
+                      >
+                        {operatorsList.map((value) => {
+                          return (
+                            <MenuItem value={value} key={value}>
+                              {value}
+                            </MenuItem>
+                          );
+                        })}
+                      </Select>
+                    ) : i !== 0 ? (
+                      data.operator
+                    ) : (
+                      "WHERE"
+                    )}
+                  </Box>
+                  {"filters" in filterObj ? (
+                    <>
+                      <FilterGroup
+                        data={filterObj}
+                        updateFilterGroup={(data) =>
+                          handleUpdateFilterGroup(i, data)
+                        }
+                        columnInfo={columnInfo}
+                        index={i}
+                        handleGroupDelete={() => removeUpdateFilterGroup(i)}
+                      />
+                    </>
+                  ) : (
+                    <Box>
+                      <Filter
+                        data={filterObj}
+                        updateFilter={(data) =>
+                          handleUpdateFilterGroup(i, data)
+                        }
+                        columnInfo={columnInfo}
+                        lastIndex={i === data?.filters.length - 1}
+                        index={i}
+                      />
+                      <Box
+                        style={{
+                          padding: "10px",
+                        }}
+                      >
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() => {
+                            removeFilter(i);
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
+              );
+            })}
+            <Box
+              sx={{
+                p: "10px 5px",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <Button
+                onClick={() => addFilter(lastFilterIndex)}
+                color="primary"
+                variant="contained"
+              >
+                Add Filter
+              </Button>
+
+              <Button
+                onClick={() => addFilter(lastFilterIndex, true)}
+                color="secondary"
+                variant="contained"
+              >
+                Add Filter Group
+              </Button>
+              <Button
+                onClick={() => handleGroupDelete(index)}
+                color="error"
+                variant="contained"
+              >
+                remove filter group
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
     </>
   );
 };

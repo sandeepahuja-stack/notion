@@ -51,12 +51,17 @@ function FilterContainer(props) {
   }, [columnsHead]);
 
   const applyFilter = () => {
-
     filterCall();
     handleClose();
   };
 
+  const handleGroupDelete = (index) => {
+    const deepObj = JSON.parse(JSON.stringify(filterState));
+    deepObj.filters.splice(index, 1);
+    updateFilterState(deepObj);
+  };
   if (!filterState) return;
+
   return (
     <>
       <Button onClick={handleOpen}>Filter</Button>
@@ -77,6 +82,7 @@ function FilterContainer(props) {
               updateFilterGroup={updateFilterState}
               data={filterState}
               columnInfo={columnsHead}
+              handleGroupDelete={handleGroupDelete}
             />
             {filterState.filters.length === 0 && (
               <Button

@@ -4,9 +4,9 @@ import { useState } from "react";
 const FilterValueFiled = (props) => {
   const { filterField, options = [], onChange, value = "" } = props;
   const [query, setQuery] = useState(value);
-  const onQueryChange=(e)=>{
-    setQuery(e.target.value)
-  }
+  const onQueryChange = (e) => {
+    setQuery(e.target.value);
+  };
   switch (filterField) {
     case "select":
     case "checkbox":
@@ -36,12 +36,12 @@ const FilterValueFiled = (props) => {
           sx={{
             width: 200,
           }}
+          size="small"
           // unable to find multi select filter api doc
           // multiple
           options={opt}
           onChange={onChange}
           value={value.length > 0 ? value : opt[0]}
-          
           disableClearable
           renderInput={(params) => <TextField {...params} />}
         />
