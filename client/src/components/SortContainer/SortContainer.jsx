@@ -1,6 +1,6 @@
 import { memo, useEffect } from "react";
 import Box from "@mui/material/Box";
-
+import ModalContainer from "components/common/ModalContainer/style";
 import Modal from "@mui/material/Modal";
 
 import { Button } from "@mui/material";
@@ -64,7 +64,7 @@ function SortContainer(props) {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <ModalContainer>
           {(sortState||[]).map(({ property, direction }, i) => {
             return (
               <Box as="div" m="10px" key={`${property}_${i}_${direction}`}>
@@ -85,7 +85,7 @@ function SortContainer(props) {
           )}
 
           <Box textAlign='right'><Button onClick={applySort} >Apply Sort</Button></Box>
-        </Box>
+          </ModalContainer>
         
       </Modal>
     </>
