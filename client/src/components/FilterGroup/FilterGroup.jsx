@@ -16,8 +16,9 @@ const FilterGroup = (props) => {
     columnInfo,
     index = 0,
     handleGroupDelete,
+    isRoot = false,
   } = props;
-
+  const [operator, setOperator] = useState(data.operator);
   const handleUpdateFilterGroup = (index, updateData) => {
     const dataCopy = JSON.parse(JSON.stringify(data));
     dataCopy.filters[index] = updateData;
@@ -25,19 +26,12 @@ const FilterGroup = (props) => {
   };
 
   const removeUpdateFilterGroup = (index) => {
-    const dataCopy = JSON.parse(JSON.stringify(data));
-    // dataCopy.filters[index] = updateData;
-    console.log(data);
-    dataCopy.filters.splice(index, 1);
-    updateFilterGroup(dataCopy);
-    console.log(dataCopy);
+    removeFilter(index);
   };
 
   const removeFilter = (index) => {
     let dataCopy = JSON.parse(JSON.stringify(data));
-
     dataCopy.filters.splice(index, 1);
-
     updateFilterGroup(dataCopy);
   };
   const addFilter = (lastFilterIndex, isGroup = false) => {
@@ -52,7 +46,6 @@ const FilterGroup = (props) => {
     }
   };
 
-  const [operator, setOperator] = useState(data.operator);
   const handleOperator = (e) => {
     setOperator(e.target.value);
     const dataCopy = JSON.parse(JSON.stringify(data));
@@ -181,13 +174,15 @@ const FilterGroup = (props) => {
               >
                 Add Filter Group
               </Button>
-              <Button
-                onClick={() => handleGroupDelete(index)}
-                color="error"
-                variant="contained"
-              >
-                remove filter group
-              </Button>
+              {!isRoot && (
+                <Button
+                  onClick={() => handleGroupDelete(index)}
+                  color="error"
+                  variant="contained"
+                >
+                  remove filter group
+                </Button>
+              )}
             </Box>
           </CardContent>
         </Card>

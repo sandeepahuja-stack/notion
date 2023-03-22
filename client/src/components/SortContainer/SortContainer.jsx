@@ -55,7 +55,9 @@ function SortContainer(props) {
   }
   return (
     <>
-      <Button onClick={handleOpen}>Sort</Button>
+      <Button onClick={handleOpen} sx={{
+        my: '10px'
+      }} >Sort</Button>
       <Modal
         open={open}
         onClose={handleClose}
