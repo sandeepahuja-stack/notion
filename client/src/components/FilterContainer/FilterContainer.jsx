@@ -7,24 +7,13 @@ import { Button } from "@mui/material";
 import getPropertyDetail from "helper/filter/getPropertyId";
 import { filterField } from "helper/filter";
 import useModal from "hooks/useModal";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80%",
-  height: "700px",
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
+import ModalContainer from "components/common/ModalContainer/style";
 
 function FilterContainer(props) {
   const { columnsHead, filterCall, filterState, updateFilterState } = props;
 
   const { handleClose, open, handleOpen } = useModal();
-  
+
   const addFirstDefaultFilter = () => {
     if (columnsHead.columnsOrder.length > 0) {
       const defaultSelectedFilter = getPropertyDetail(
@@ -66,16 +55,21 @@ function FilterContainer(props) {
 
   return (
     <>
-      <Button onClick={handleOpen} sx={{
-        m: '10px'
-      }}>Filter</Button>
+      <Button
+        onClick={handleOpen}
+        sx={{
+          m: "10px",
+        }}
+      >
+        Filter
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <ModalContainer>
           <Box
             sx={{
               height: "600px",
@@ -105,7 +99,7 @@ function FilterContainer(props) {
               Apply Filter
             </Button>
           </Box>
-        </Box>
+        </ModalContainer>
       </Modal>
     </>
   );

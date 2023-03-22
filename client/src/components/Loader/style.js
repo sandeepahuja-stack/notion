@@ -1,5 +1,6 @@
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
+import COLORS from "constants /colors";
 
 const rotate360 = keyframes`
   0% {
@@ -29,7 +30,7 @@ const LoaderContainer = styled.div({
 
     div: {
       position: "absolute",
-      background: "#fff",
+      background: COLORS.WHITE,
       opacity: 1,
       borderRadius: "50%",
       animation: `${rotate360} 1.4s cubic-bezier(0, 0.2, 0.8, 1) infinite`,

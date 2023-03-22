@@ -1,0 +1,1 @@
+export const MAX_NESTED_COUNT = 3;

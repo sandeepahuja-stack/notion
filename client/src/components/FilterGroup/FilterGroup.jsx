@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -7,7 +8,9 @@ import {
   Select,
 } from "@mui/material";
 import Filter from "../Filter";
-import React, { useRef, useState } from "react";
+import { deepCopy } from "helper";
+import COLORS from "constants /colors";
+import { MAX_NESTED_COUNT } from "constants ";
 
 const FilterGroup = (props) => {
   const {
@@ -17,30 +20,24 @@ const FilterGroup = (props) => {
     index = 0,
     handleGroupDelete,
     isRoot = false,
-    nestedCount, 
+    nestedCount,
   } = props;
-  
+
   const [operator, setOperator] = useState(data.operator);
   const handleUpdateFilterGroup = (index, updateData) => {
-    const dataCopy = JSON.parse(JSON.stringify(data));
+    const dataCopy = deepCopy(data);
     dataCopy.filters[index] = updateData;
     updateFilterGroup(dataCopy);
   };
 
-  const removeUpdateFilterGroup = (index) => {
-    removeFilter(index);
-  };
-
   const removeFilter = (index) => {
-    let dataCopy = JSON.parse(JSON.stringify(data));
+    let dataCopy = deepCopy(data);
     dataCopy.filters.splice(index, 1);
     updateFilterGroup(dataCopy);
   };
   const addFilter = (lastFilterIndex, isGroup = false) => {
     const newFilterData = data.filters[lastFilterIndex];
     if (isGroup) {
-      
-      console.log(nestedCount, index);
       handleUpdateFilterGroup(data.filters.length, {
         operator: "or",
         filters: [newFilterData],
@@ -52,7 +49,7 @@ const FilterGroup = (props) => {
 
   const handleOperator = (e) => {
     setOperator(e.target.value);
-    const dataCopy = JSON.parse(JSON.stringify(data));
+    const dataCopy = deepCopy(data);
     dataCopy.operator = e.target.value;
     updateFilterGroup(dataCopy);
   };
@@ -63,7 +60,7 @@ const FilterGroup = (props) => {
       {data.filters.length > 0 && (
         <Card
           sx={{
-            border: "1px solid #dfdfdf",
+            border: `1px solid ${COLORS.GRAY}`,
           }}
         >
           <CardContent>
@@ -120,11 +117,10 @@ const FilterGroup = (props) => {
                         updateFilterGroup={(data) =>
                           handleUpdateFilterGroup(i, data)
                         }
-                        
-                        nestedCount={nestedCount+1}
+                        nestedCount={nestedCount + 1}
                         columnInfo={columnInfo}
                         index={i}
-                        handleGroupDelete={() => removeUpdateFilterGroup(i)}
+                        handleGroupDelete={() => removeFilter(i)}
                       />
                     </>
                   ) : (
@@ -176,7 +172,7 @@ const FilterGroup = (props) => {
                 >
                   Add Filter
                 </Button>
-                {nestedCount < 5 && (
+                {nestedCount < MAX_NESTED_COUNT && (
                   <Button
                     onClick={() => addFilter(lastFilterIndex, true)}
                     color="secondary"
