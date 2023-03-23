@@ -9,6 +9,8 @@
 ```
 ### Install the dependencies
 ```
+   Node version - v14.15.0
+   
    cd client
    npm install 
 
